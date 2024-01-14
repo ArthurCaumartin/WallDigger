@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
-public class Graber : MonoBehaviour
+public class Digger : MonoBehaviour
 {
     [SerializeField] private Transform _direction;
     [SerializeField] private float _grabDistance;
