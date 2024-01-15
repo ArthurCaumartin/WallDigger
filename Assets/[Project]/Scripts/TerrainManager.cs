@@ -6,6 +6,7 @@ using UnityEngine;
 //! torp bien le tutossssssssssssssssssssssssssss pour poser les bases
 //! https://www.youtube.com/watch?v=_XtOOhxRsWY&list=PLn1X2QyVjFVDE9syarF1HoUFwB_3K7z2y&ab_channel=ErenCode
 
+[System.Serializable]
 public enum TileType
 {
     Empty,
@@ -13,6 +14,7 @@ public enum TileType
     Grass,
     Stone,
     Mineral,
+    Boulder,
 }
 
 public class TerrainManager : MonoBehaviour
@@ -22,12 +24,14 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] private GameObject _dirtTilePrefab;
     [SerializeField] private GameObject _stoneTilePrefab;
     [SerializeField] private GameObject _mineralTilePrefab;
+    [SerializeField] private GameObject _boulderTilePrefab;
 
     [Header("Terrain Parameter :")]
     [SerializeField] private int _worldSizeX = 50;
     [SerializeField] private int _worldSizeY = 50;
     [SerializeField] private int _surfaceDepth = 5;
     [SerializeField] private float _mineralSpawnChance = 0.05f;
+    [SerializeField] private float _boulderSpawnChance = 0.05f;
 
     [Header("Noise Parameter :")]
     [SerializeField, Range(0, 1)] private float _stoneSpawnValue = 0.5f;
@@ -37,7 +41,7 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] private Texture2D _noiseTexture;
     
     private TileType[,] _terrainState;
-    private GameObject[,] _tileArray;
+    private TileBehavior[,] _tileArray;
 
     void OnValidate()
     {
@@ -51,7 +55,7 @@ public class TerrainManager : MonoBehaviour
         //     print("Depth : " + i + " / " + _mineralSpawnDepthScale.Evaluate(Mathf.InverseLerp(0, _worldSizeY, i)));
         // }
         _terrainState = new TileType[_worldSizeX, _worldSizeY];
-        _tileArray = new GameObject[_worldSizeX, _worldSizeY];
+        _tileArray = new TileBehavior[_worldSizeX, _worldSizeY];
 
         transform.position = new Vector3Int(-_worldSizeX / 2, -_worldSizeY, 0);
         _seed = Random.Range(-10000, 10000);
@@ -63,7 +67,7 @@ public class TerrainManager : MonoBehaviour
     
     private void GenerateNoiseTexture()
     {
-        print("Compute Noise Texture");
+        // print("Compute Noise Texture");
         _noiseTexture = new Texture2D(_worldSizeX, _worldSizeY);
 
         for (int x = 0; x < _noiseTexture.width; x++)
@@ -81,7 +85,7 @@ public class TerrainManager : MonoBehaviour
 
     private void ComputeTerrainArray()
     {
-        print("Compute Array");
+        // print("Compute Array");
         for (int x = 0; x < _worldSizeX; x++)
         {
             for (int y = 0; y < _worldSizeY; y++)
@@ -92,9 +96,13 @@ public class TerrainManager : MonoBehaviour
                 {
                     _terrainState[x, y] = TileType.Stone;
 
+                    if(Random.value < _boulderSpawnChance)
+                    {
+                        _terrainState[x, y] = TileType.Boulder;
+                    }
+
                     //! Minerals
                     float depthMultiplier = _mineralSpawnDepthScale.Evaluate(Mathf.InverseLerp(_worldSizeY, 0, y));
-                    // print(depthMultiplier);
                     if(Random.value < _mineralSpawnChance * depthMultiplier)
                     {
                         _terrainState[x, y] = TileType.Mineral;
@@ -122,7 +130,7 @@ public class TerrainManager : MonoBehaviour
 
     public void GenerateTerrainTiles()
     {
-        print("Generate Tiles");
+        // print("Generate Tiles");
         for (int x = 0; x < _worldSizeX; x++)
         {
             for (int y = 0; y < _worldSizeY; y++)
@@ -152,6 +160,10 @@ public class TerrainManager : MonoBehaviour
             case TileType.Mineral :
                 newTile = Instantiate(_mineralTilePrefab);
             break;
+
+            case TileType.Boulder :
+                newTile = Instantiate(_boulderTilePrefab);
+            break;
         }
 
         if(!newTile)
@@ -159,6 +171,35 @@ public class TerrainManager : MonoBehaviour
         
         newTile.transform.parent = transform;
         newTile.transform.localPosition = new Vector2(x, y);
-        _tileArray[x, y] = newTile;
+
+        TileBehavior newTileBehavior = newTile.GetComponent<TileBehavior>();
+        _tileArray[x, y] = newTileBehavior;
+        newTileBehavior.TerrainPosition = new Vector2Int(x, y);
+    }
+
+    public void SetTileInArray(Vector2Int position, TileBehavior tileToSet)
+    {
+        _tileArray[position.x, position.y] = tileToSet;
+    }
+
+    public void DigTile(Vector2Int tileToDigPosition)
+    {
+        _tileArray[tileToDigPosition.x, tileToDigPosition.y].Dig();
+
+        if(tileToDigPosition.y + 1 < _worldSizeY)
+        {
+            TileBehavior tileAbove = _tileArray[tileToDigPosition.x, tileToDigPosition.y + 1];
+
+            if(tileAbove)
+                print(tileAbove.name);
+            else
+                print("Nothhing above");
+
+
+            if(tileAbove.GetTileType() == TileType.Boulder)
+            {
+                tileAbove.BoulderFall(this);
+            }
+        }
     }
 }
