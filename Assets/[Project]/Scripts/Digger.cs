@@ -9,15 +9,24 @@ public class Digger : MonoBehaviour
     [SerializeField] private float _grabDistance;
     [SerializeField] private LayerMask _layerMask;
     private RaycastHit2D _hit;
+
+    private void OnDig()
+    {
+        if(_hit)
+        {
+            _hit.collider.GetComponent<TileBehavior>().Dig();
+        }
+    }
     
     void FixedUpdate()
     {
-        _hit = Physics2D.BoxCast(transform.position
-                                , Vector2.one * .5f
-                                , 0f
-                                , _direction.right
+        Vector2 mouseDirection = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position).normalized;
+        _hit = Physics2D.Raycast(transform.position
+                                , mouseDirection
                                 , _grabDistance
-                                ,_layerMask);
+                                , _layerMask);
+        
+        Debug.DrawRay(transform.position, mouseDirection * _grabDistance, Color.red);
 
         if(_hit.collider)
         {

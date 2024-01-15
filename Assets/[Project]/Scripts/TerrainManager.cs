@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
-//! torp bien le tutossssssssssssssssssssssssssss
+//! torp bien le tutossssssssssssssssssssssssssss pour poser les bases
 //! https://www.youtube.com/watch?v=_XtOOhxRsWY&list=PLn1X2QyVjFVDE9syarF1HoUFwB_3K7z2y&ab_channel=ErenCode
 
-enum TileType
+public enum TileType
 {
     Empty,
     Dirt,
@@ -36,7 +37,7 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] private Texture2D _noiseTexture;
     
     private TileType[,] _terrainState;
-
+    private GameObject[,] _tileArray;
 
     void OnValidate()
     {
@@ -45,12 +46,12 @@ public class TerrainManager : MonoBehaviour
 
     void Start()
     {
-        for (int i = 0; i < _worldSizeY; i++)
-        {
-            print("Depth : " + i + " / " + _mineralSpawnDepthScale.Evaluate(Mathf.InverseLerp(0, _worldSizeY, i)));
-        }
-
+        // for (int i = 0; i < _worldSizeY; i++)
+        // {
+        //     print("Depth : " + i + " / " + _mineralSpawnDepthScale.Evaluate(Mathf.InverseLerp(0, _worldSizeY, i)));
+        // }
         _terrainState = new TileType[_worldSizeX, _worldSizeY];
+        _tileArray = new GameObject[_worldSizeX, _worldSizeY];
 
         transform.position = new Vector3Int(-_worldSizeX / 2, -_worldSizeY, 0);
         _seed = Random.Range(-10000, 10000);
@@ -58,6 +59,24 @@ public class TerrainManager : MonoBehaviour
         GenerateNoiseTexture();
         ComputeTerrainArray();
         GenerateTerrainTiles();
+    }
+    
+    private void GenerateNoiseTexture()
+    {
+        print("Compute Noise Texture");
+        _noiseTexture = new Texture2D(_worldSizeX, _worldSizeY);
+
+        for (int x = 0; x < _noiseTexture.width; x++)
+        {
+            for (int y = 0; y < _noiseTexture.height; y++)
+            {
+                float noisePixel = Mathf.PerlinNoise((x + _seed) * _noiseFrequency, (y + _seed) * _noiseFrequency);
+                _noiseTexture.SetPixel(x, y, new Color(noisePixel, noisePixel, noisePixel));
+            }
+        }
+    
+        //! Transfere de donné entre CPU / GPU ?
+        _noiseTexture.Apply();
     }
 
     private void ComputeTerrainArray()
@@ -140,23 +159,11 @@ public class TerrainManager : MonoBehaviour
         
         newTile.transform.parent = transform;
         newTile.transform.localPosition = new Vector2(x, y);
+        _tileArray[x, y] = newTile;
     }
 
-    private void GenerateNoiseTexture()
+    public void EditTileType(int x, int y, TileType type)
     {
-        print("Compute Noise Texture");
-        _noiseTexture = new Texture2D(_worldSizeX, _worldSizeY);
-
-        for (int x = 0; x < _noiseTexture.width; x++)
-        {
-            for (int y = 0; y < _noiseTexture.height; y++)
-            {
-                float noisePixel = Mathf.PerlinNoise((x + _seed) * _noiseFrequency, (y + _seed) * _noiseFrequency);
-                _noiseTexture.SetPixel(x, y, new Color(noisePixel, noisePixel, noisePixel));
-            }
-        }
-    
-        //! Transfere de donné entre CPU / GPU ?
-        _noiseTexture.Apply();
+        _terrainState[x, y] = type;
     }
 }

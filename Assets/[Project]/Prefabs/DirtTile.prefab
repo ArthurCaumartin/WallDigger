@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 197217127694197135}
   - component: {fileID: 6974772274951060103}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1026317417743630744}
   - component: {fileID: 1987002464326261324}
-  m_Layer: 0
+  - component: {fileID: 5118892205877316116}
+  m_Layer: 10
   m_Name: DirtTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,3 +163,15 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &5118892205877316116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9070864575939942914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17f2fac2b15b979489804e5683e598b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
