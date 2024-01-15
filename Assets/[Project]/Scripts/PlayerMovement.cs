@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] private Digger _digger;
     [SerializeField] private Transform _direction;
     [SerializeField] private float _moveSpeed;
     [SerializeField] private Vector3 _moveAxis;

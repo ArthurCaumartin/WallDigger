@@ -26,8 +26,6 @@ public class Digger : MonoBehaviour
                                 , _grabDistance
                                 , _layerMask);
         
-        Debug.DrawRay(transform.position, mouseDirection * _grabDistance, Color.red);
-
         if(_hit.collider)
         {
             // print("hit " + _hit.collider.name);

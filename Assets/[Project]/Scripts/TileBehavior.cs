@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class TileBehavior : MonoBehaviour
 {
-    
     public void Dig()
     {
         Destroy(gameObject);

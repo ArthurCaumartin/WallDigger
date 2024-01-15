@@ -161,9 +161,4 @@ public class TerrainManager : MonoBehaviour
         newTile.transform.localPosition = new Vector2(x, y);
         _tileArray[x, y] = newTile;
     }
-
-    public void EditTileType(int x, int y, TileType type)
-    {
-        _terrainState[x, y] = type;
-    }
 }
