@@ -8,6 +8,7 @@ public class TileBehavior : MonoBehaviour
     [SerializeField] private Vector2Int _terrainPosition;
     public Vector2Int TerrainPosition {get{return _terrainPosition;} set{_terrainPosition = value;}}
     [SerializeField] private TileType _type;
+    public TileType TileType {get{return _type;} set{_type = value;}}
     private SpriteRenderer _spriteRenderer;
 
     private bool _killPlayerOnCollision = false;
@@ -19,7 +20,9 @@ public class TileBehavior : MonoBehaviour
     
     public void BoulderFall(TerrainManager terrainManager)
     {
+        print("Boulder will fall");
         _killPlayerOnCollision = true;
+
         _spriteRenderer.transform.DOShakePosition(1f, .3f, 8);
         _spriteRenderer.transform.DOShakeRotation(1f, .3f, 8)
         .OnComplete(() =>

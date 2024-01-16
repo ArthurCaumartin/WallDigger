@@ -15,6 +15,7 @@ public enum TileType
     Stone,
     Mineral,
     Boulder,
+    Ladder,
 }
 
 public class TerrainManager : MonoBehaviour
@@ -147,22 +148,27 @@ public class TerrainManager : MonoBehaviour
         {
             case TileType.Stone :
                 newTile = Instantiate(_stoneTilePrefab);
+                newTile.GetComponent<TileBehavior>().TileType = TileType.Stone;
             break;
 
             case TileType.Dirt :
                 newTile = Instantiate(_dirtTilePrefab);
+                newTile.GetComponent<TileBehavior>().TileType = TileType.Dirt;
             break;
 
             case TileType.Grass :
                 newTile = Instantiate(_grassTilePrefab);
+                newTile.GetComponent<TileBehavior>().TileType = TileType.Grass;
             break;
 
             case TileType.Mineral :
                 newTile = Instantiate(_mineralTilePrefab);
+                newTile.GetComponent<TileBehavior>().TileType = TileType.Mineral;
             break;
 
             case TileType.Boulder :
                 newTile = Instantiate(_boulderTilePrefab);
+                newTile.GetComponent<TileBehavior>().TileType = TileType.Boulder;
             break;
         }
 
@@ -185,10 +191,14 @@ public class TerrainManager : MonoBehaviour
     public void DigTile(Vector2Int tileToDigPosition)
     {
         _tileArray[tileToDigPosition.x, tileToDigPosition.y].Dig();
+        BoulderCheck(tileToDigPosition);
+    }
 
-        if(tileToDigPosition.y + 1 < _worldSizeY)
+    private void BoulderCheck(Vector2Int digTilePosition)
+    {
+        if(digTilePosition.y + 1 < _worldSizeY)
         {
-            TileBehavior tileAbove = _tileArray[tileToDigPosition.x, tileToDigPosition.y + 1];
+            TileBehavior tileAbove = _tileArray[digTilePosition.x, digTilePosition.y + 1];
 
             if(tileAbove)
                 print(tileAbove.name);

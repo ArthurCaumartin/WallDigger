@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.38679248, g: 0.38679248, b: 0.38679248, a: 1}
+  m_Color: {r: 0.23270428, g: 0.23270428, b: 0.23270428, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -94,9 +94,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1026317417743630744}
   - component: {fileID: 1987002464326261324}
-  - component: {fileID: 1565353311479133820}
+  - component: {fileID: 8939064591656741941}
   m_Layer: 10
-  m_Name: StoneTile
+  m_Name: BoulderTile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -161,9 +161,9 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.48565292, y: 0.48565292}
   m_EdgeRadius: 0
---- !u!114 &1565353311479133820
+--- !u!114 &8939064591656741941
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -176,4 +176,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _terrainPosition: {x: 0, y: 0}
-  _type: 3
+  _type: 0

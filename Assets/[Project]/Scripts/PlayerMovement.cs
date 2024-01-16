@@ -39,6 +39,11 @@ public class PlayerMovement : MonoBehaviour
         _moveAxis = Vector3.zero;
     }
 
+    private void Dig()
+    {
+        
+    }
+
 
     public void OnMove(InputValue value)
     {
