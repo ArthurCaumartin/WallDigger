@@ -27,9 +27,11 @@ public class TileBehavior : MonoBehaviour
         _spriteRenderer.transform.DOShakeRotation(1f, .3f, 8)
         .OnComplete(() =>
         {
+
             transform.DOMove(transform.position + Vector3.down, .3f)
             .OnComplete(() =>
             {
+                _terrainPosition.y --;
                 terrainManager.SetTileInArray(_terrainPosition, this);
                 _killPlayerOnCollision = false;
             });
@@ -54,4 +56,10 @@ public class TileBehavior : MonoBehaviour
     {
         return _type;
     }
+
+    // void OnMouseDown()
+    // {
+    //     Vector2Int p = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+    //     print(TerrainManager.instance._tileDictionary[p].gameObject.name);
+    // }
 }

@@ -18,6 +18,8 @@ public class SecondOrderMotion : MonoBehaviour
     private Transform _transform;
     private SecondOrderDynamics[] _dymamics = new SecondOrderDynamics[3];
 
+    [SerializeField] private Vector3 _offSet;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -46,7 +48,7 @@ public class SecondOrderMotion : MonoBehaviour
         float y = _dymamics[1].Update(Time.deltaTime, target.position.y);
         float z = _dymamics[2].Update(Time.deltaTime, target.position.z);
 
-        _transform.position = new Vector3(x, y, z);
+        _transform.position = new Vector3(x, y, z) + _offSet;
     }
 
     private void OnDrawGizmos()
