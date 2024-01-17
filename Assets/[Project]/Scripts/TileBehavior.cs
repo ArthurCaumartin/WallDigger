@@ -20,18 +20,21 @@ public class TileBehavior : MonoBehaviour
     
     public void BoulderFall(TerrainManager terrainManager)
     {
-        print("Boulder will fall");
+        // print("Boulder will fall");
         _killPlayerOnCollision = true;
 
         _spriteRenderer.transform.DOShakePosition(1f, .3f, 8);
         _spriteRenderer.transform.DOShakeRotation(1f, .3f, 8)
         .OnComplete(() =>
         {
+            terrainManager.SetTileInArray(new Vector2Int((int)transform.position.x, (int)transform.position.y));
+            Vector3 nextPosition = terrainManager.GetDepthTilePose(transform);
+            print("N : " + nextPosition + " Actu : " + transform.position);
 
-            transform.DOMove(transform.position + Vector3.down, .3f)
+            transform.DOMove(nextPosition, .3f)
             .OnComplete(() =>
             {
-                _terrainPosition.y --;
+                _terrainPosition.y = (int)transform.position.y;
                 terrainManager.SetTileInArray(_terrainPosition, this);
                 _killPlayerOnCollision = false;
             });
@@ -57,9 +60,10 @@ public class TileBehavior : MonoBehaviour
         return _type;
     }
 
-    // void OnMouseDown()
-    // {
-    //     Vector2Int p = new Vector2Int((int)transform.position.x, (int)transform.position.y);
-    //     print(TerrainManager.instance._tileDictionary[p].gameObject.name);
-    // }
+    void OnMouseDown()
+    {
+        print("Terrain Pos : " + _terrainPosition);
+        print("Tile name :" + TerrainManager.instance._tileDictionary[_terrainPosition].gameObject.name);
+        print("Tile position :" + _terrainPosition);
+    }
 }

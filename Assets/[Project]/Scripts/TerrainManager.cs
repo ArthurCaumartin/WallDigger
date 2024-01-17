@@ -35,6 +35,7 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] private int _surfaceDepth = 5;
     [SerializeField] private float _mineralSpawnChance = 0.05f;
     [SerializeField] private float _boulderSpawnChance = 0.05f;
+    [SerializeField] private LayerMask _layerMask;
 
     [Header("Noise Parameter :")]
     [SerializeField, Range(0, 1)] private float _stoneSpawnValue = 0.5f;
@@ -44,8 +45,8 @@ public class TerrainManager : MonoBehaviour
     [SerializeField] private Texture2D _noiseTexture;
 
     private TileType[,] _terrainState; //! dois etre localiser au fonction qui en on besoin
-    private TileBehavior[,] _tileArray; //! a remplacer par le dictionaire
-    [SerializeField] private Dictionary<Vector2Int, TileBehavior> _tileDictionary;
+    // private TileBehavior[,] _tileArray; //! a remplacer par le dictionaire
+    [SerializeField] public Dictionary<Vector2Int, TileBehavior> _tileDictionary;
 
     void Awake()
     {
@@ -60,7 +61,7 @@ public class TerrainManager : MonoBehaviour
     void Start()
     {
         _terrainState = new TileType[_worldSizeX, _worldSizeY];
-        _tileArray = new TileBehavior[_worldSizeX, _worldSizeY];
+        // _tileArray = new TileBehavior[_worldSizeX, _worldSizeY];
         _tileDictionary = new Dictionary<Vector2Int, TileBehavior>();
 
         transform.position = new Vector3Int(-_worldSizeX / 2, -_worldSizeY, 0);
@@ -84,8 +85,11 @@ public class TerrainManager : MonoBehaviour
             for (int y = 0; y < _worldSizeY; y++)
             {
                 _terrainState[x, y] = TileType.Empty;
-                if (_tileArray[x, y])
-                    Destroy(_tileArray[x, y].gameObject);
+                TileBehavior tile;
+
+                //! Bug au reset si une tile a déja étais Destroy
+                if (_tileDictionary.TryGetValue(new Vector2Int(x, y), out tile))
+                    Destroy(tile.gameObject);
             }
         }
     }
@@ -200,40 +204,75 @@ public class TerrainManager : MonoBehaviour
             return;
 
         newTile.transform.parent = transform;
-        newTile.transform.localPosition = new Vector2(x, y);
+        newTile.transform.localPosition = new Vector3(x, y, 0);
 
         TileBehavior newTileBehavior = newTile.GetComponent<TileBehavior>();
-        _tileArray[x, y] = newTileBehavior;
-        newTileBehavior.TerrainPosition = new Vector2Int(x, y);
+        Vector2Int newTerrainPos = new Vector2Int((int)newTile.transform.position.x, (int)newTile.transform.position.y);
+
+        _tileDictionary[newTerrainPos] = newTileBehavior;
+        newTileBehavior.TerrainPosition = newTerrainPos;
 
         Vector2Int worldPos = new Vector2Int((int)newTile.transform.position.x, (int)newTile.transform.position.y);
         // _tileDictionary.Add(worldPos, newTileBehavior);
     }
 
-    public void SetTileInArray(Vector2Int position, TileBehavior tileToSet)
+    public void SetTileInArray(Vector2Int position, TileBehavior tileToSet = null)
     {
-        _tileArray[position.x, position.y] = tileToSet;
+        if (!tileToSet)
+        {
+            _tileDictionary[position] = null;
+            return;
+        }
+
+        _tileDictionary[position] = tileToSet;
+        print(_tileDictionary[position]);
+    }
+
+    public Vector3 GetDepthTilePose(Transform tileTransform)
+    {
+        int layerBackup = tileTransform.gameObject.layer;
+        tileTransform.gameObject.layer = 0;
+
+        RaycastHit2D hit = Physics2D.Raycast(tileTransform.position, Vector2.down, 1000, _layerMask);
+        if (hit)
+        {
+            // print("Hit ! " + hit.collider.name);
+            // print("Hit position : " + hit.transform.position);
+
+            // GameObject p = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            // p.transform.position = hit.transform.position;
+
+            tileTransform.gameObject.layer = layerBackup;
+            return hit.transform.position + Vector3.up;
+        }
+        else
+        {
+            print("no hit !");
+
+            tileTransform.gameObject.layer = layerBackup;
+            return tileTransform.position - Vector3.down;
+        }
+
     }
 
     public void DigTile(Vector2Int tileToDigPosition)
     {
-        _tileArray[tileToDigPosition.x, tileToDigPosition.y].Dig();
         BoulderCheck(tileToDigPosition);
+        _tileDictionary[tileToDigPosition].Dig();
     }
 
     private void BoulderCheck(Vector2Int digTilePosition)
     {
-        if (digTilePosition.y + 1 < _worldSizeY)
+        if (digTilePosition.y + 1 < 0)
         {
-            TileBehavior tileAbove = _tileArray[digTilePosition.x, digTilePosition.y + 1];
+            TileBehavior tileAbove = _tileDictionary[digTilePosition + Vector2Int.up];
 
-            if (tileAbove)
-                print(tileAbove.name);
-            else
-                print("Nothhing above");
+            // if (tileAbove)
+            //     print(tileAbove.name);
+            // else
+            //     print("Nothhing above");
 
-
-            if (tileAbove.GetTileType() == TileType.Boulder)
+            if (tileAbove && tileAbove.GetTileType() == TileType.Boulder)
             {
                 tileAbove.BoulderFall(this);
             }
