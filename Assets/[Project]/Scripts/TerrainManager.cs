@@ -257,11 +257,13 @@ public class TerrainManager : MonoBehaviour
 
     public void DigTile(Vector2Int tileToDigPosition)
     {
-        BoulderCheck(tileToDigPosition);
-        _tileDictionary[tileToDigPosition].Dig();
+        if(_tileDictionary[tileToDigPosition].Dig())
+        {
+            BoulderCheck(tileToDigPosition);
+        }
     }
 
-    private void BoulderCheck(Vector2Int digTilePosition)
+    public void BoulderCheck(Vector2Int digTilePosition)
     {
         if (digTilePosition.y + 1 < 0)
         {

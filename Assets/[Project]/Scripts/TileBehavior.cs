@@ -5,19 +5,22 @@ using DG.Tweening;
 
 public class TileBehavior : MonoBehaviour
 {
+    [SerializeField] private int _maxDurability;
     [SerializeField] private Vector2Int _terrainPosition;
-    public Vector2Int TerrainPosition {get{return _terrainPosition;} set{_terrainPosition = value;}}
+    public Vector2Int TerrainPosition { get { return _terrainPosition; } set { _terrainPosition = value; } }
     [SerializeField] private TileType _type;
-    public TileType TileType {get{return _type;} set{_type = value;}}
-    private SpriteRenderer _spriteRenderer;
+    [SerializeField] private SpriteRenderer _spriteRenderer;
+    [SerializeField] private SpriteRenderer _durabilitySpriteRenderer;
+    public TileType TileType { get { return _type; } set { _type = value; } }
+    private int _currentDurability;
 
     private bool _killPlayerOnCollision = false;
 
     void Start()
     {
-        _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        _currentDurability = _maxDurability;
     }
-    
+
     public void BoulderFall(TerrainManager terrainManager)
     {
         // print("Boulder will fall");
@@ -27,10 +30,10 @@ public class TileBehavior : MonoBehaviour
         _spriteRenderer.transform.DOShakeRotation(1f, .3f, 8)
         .OnComplete(() =>
         {
+            terrainManager.BoulderCheck(_terrainPosition);
             terrainManager.SetTileInArray(new Vector2Int((int)transform.position.x, (int)transform.position.y));
             Vector3 nextPosition = terrainManager.GetDepthTilePose(transform);
             print("N : " + nextPosition + " Actu : " + transform.position);
-
             transform.DOMove(nextPosition, .3f)
             .OnComplete(() =>
             {
@@ -44,15 +47,24 @@ public class TileBehavior : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D other)
     {
-        if(other.collider.tag == "Player" && _killPlayerOnCollision)
+        if (other.collider.tag == "Player" && _killPlayerOnCollision)
         {
             GameManager.instance.KillPlayer();
         }
     }
 
-    public void Dig()
+    public bool Dig()
     {
-        Destroy(gameObject);
+        _currentDurability--;
+        _durabilitySpriteRenderer.sprite = SpriteBank.instance.TileDurability[_currentDurability % SpriteBank.instance.TileDurability.Count];
+        // (int)Mathf.InverseLerp(SpriteBank.instance.TileDurability.Count, 0, _currentDurability)];
+        
+        if(_currentDurability <= 0)
+        {
+            Destroy(gameObject);
+            return true;
+        }
+        return false;
     }
 
     public TileType GetTileType()

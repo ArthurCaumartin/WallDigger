@@ -5,18 +5,11 @@ using UnityEngine.InputSystem;
 
 public class Inventory : MonoBehaviour
 {
-    [SerializeField] private TerrainManager _terrainManager;
-    Vector2 _useDirection;
-    
-    void FixedUpdate()
-    {
-        if(_useDirection == Vector2.zero)
-            return;
-        
-    }
+    [SerializeField] private List<ScriptableItem> _itemList;
+    [SerializeField] private ScriptableItem _selectedItem;
 
-    private void OnPlaceItem(InputValue value)
+    private void SelectItem()
     {
-        _useDirection = value.Get<Vector2>();
+        
     }
 }
