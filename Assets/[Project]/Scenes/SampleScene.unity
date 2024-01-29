@@ -626,7 +626,7 @@ MonoBehaviour:
   _worldSizeY: 50
   _surfaceDepth: 3
   _mineralSpawnChance: 0.04
-  _boulderSpawnChance: 0.5
+  _boulderSpawnChance: 0.04
   _layerMask:
     serializedVersion: 2
     m_Bits: 1024
@@ -666,7 +666,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   _noiseFrequency: 0.06
   _seed: 1110
-  _noiseTexture: {fileID: 1021031782}
+  _noiseTexture: {fileID: 1131719999}
 --- !u!4 &705936341
 Transform:
   m_ObjectHideFlags: 0
@@ -848,7 +848,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!28 &1021031782
+--- !u!28 &1131719999
 Texture2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -33,7 +33,7 @@ public class TileBehavior : MonoBehaviour
             terrainManager.BoulderCheck(_terrainPosition);
             terrainManager.SetTileInArray(new Vector2Int((int)transform.position.x, (int)transform.position.y));
             Vector3 nextPosition = terrainManager.GetDepthTilePose(transform);
-            print("N : " + nextPosition + " Actu : " + transform.position);
+            // print("N : " + nextPosition + " Actu : " + transform.position);
             transform.DOMove(nextPosition, .3f)
             .OnComplete(() =>
             {
@@ -75,7 +75,7 @@ public class TileBehavior : MonoBehaviour
     void OnMouseDown()
     {
         print("Terrain Pos : " + _terrainPosition);
-        print("Tile name :" + TerrainManager.instance._tileDictionary[_terrainPosition].gameObject.name);
+        // print("Tile name :" + TerrainManager.instance._tileDictionary[_terrainPosition].gameObject.name);
         print("Tile position :" + _terrainPosition);
     }
 }

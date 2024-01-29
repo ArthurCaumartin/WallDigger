@@ -12,7 +12,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask _layerMask;
 
     private Rigidbody2D _rigidbody;
-    private RaycastHit2D _hit;
 
     void Start()
     {
@@ -21,36 +20,54 @@ public class PlayerMovement : MonoBehaviour
 
     void OnMoveInput()
     {
-        _hit = Physics2D.Raycast(transform.position, _moveAxis, 1f, _layerMask);
-        if(_hit.collider)
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, _moveAxis, 1f, _layerMask);
+        if(hit.collider)
         {
-            Dig();
+            TileBehavior tile = hit.collider.GetComponent<TileBehavior>();
+            Dig(tile);
+            return;
         }
-        else
-        {
-            Move();
-        }
+        Move(_moveAxis);
     }
 
-    void Dig()
+    private void Dig(TileBehavior tileToDig)
     {
-        TileBehavior tileHit = _hit.collider.GetComponent<TileBehavior>();
-        _terrainManager.DigTile(tileHit.TerrainPosition);
+        _terrainManager.DigTile(tileToDig.TerrainPosition);
+        CheckVoidUnderPlayer();
     }
 
-    void Move()
+    private void Move(Vector2 moveDirection)
     {
-        _rigidbody.MovePosition(transform.position + new Vector3(_moveAxis.x, _moveAxis.y, 0));
+        _rigidbody.MovePosition(transform.position + new Vector3(moveDirection.x, moveDirection.y, 0));
+        CheckVoidUnderPlayer();
     }
+
+    private void CheckVoidUnderPlayer()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, Mathf.Infinity, _layerMask);
+        if(!hit.collider)
+            return;
+        
+        TileBehavior tile = hit.collider.GetComponent<TileBehavior>();
+        if(Vector3.Distance(tile.transform.position, transform.position) < 1.5)
+            return;
+
+        _rigidbody.MovePosition(tile.transform.position + Vector3.up);
+        print(hit.collider.name);
+    }
+
 
     public void OnMove(InputValue value)
     {
+        print("Input !");
         Vector2 valueVector = value.Get<Vector2>();
 
         if(valueVector == Vector2.down | valueVector == Vector2.left | 
-            valueVector == Vector2.right | valueVector == Vector2.up)
+            valueVector == Vector2.right/*  | valueVector == Vector2.up */)
             _moveAxis = valueVector;
 
+        if(_moveAxis == Vector2.zero)
+            return;
         OnMoveInput();
         _moveAxis = Vector2.zero;
     }
